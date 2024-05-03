@@ -29,11 +29,11 @@ struct
   include Set.Make (Lincons1)
 
   let of_earray ({lincons0_array; array_env}: Lincons1.earray): t =
-    Array.enum lincons0_array
-    |> Enum.map (fun (lincons0: Lincons0.t) ->
+    Array.to_seq lincons0_array
+    |> Seq.map (fun (lincons0: Lincons0.t) ->
         Lincons1.{lincons0; env = array_env}
       )
-    |> of_enum
+    |> of_seq
 end
 
 (** A few code elements for environment changes from functions as remove_vars etc. have been moved to sharedFunctions as they are needed in a similar way inside affineEqualityDomain.
@@ -50,27 +50,27 @@ struct
   let add_vars env vs =
     let vs' =
       vs
-      |> List.enum
-      |> Enum.filter (fun v -> not (Environment.mem_var env v))
-      |> Array.of_enum
+      |> List.to_seq
+      |> Seq.filter (fun v -> not (Environment.mem_var env v))
+      |> Array.of_seq
     in
     Environment.add env vs' [||]
 
   let remove_vars env vs =
     let vs' =
       vs
-      |> List.enum
-      |> Enum.filter (fun v -> Environment.mem_var env v)
-      |> Array.of_enum
+      |> List.to_seq
+      |> Seq.filter (fun v -> Environment.mem_var env v)
+      |> Array.of_seq
     in
     Environment.remove env vs'
 
   let remove_filter env f =
     let vs' =
       ivars_only env
-      |> List.enum
-      |> Enum.filter f
-      |> Array.of_enum
+      |> List.to_seq
+      |> Seq.filter f
+      |> Array.of_seq
     in
     Environment.remove env vs'
 
@@ -79,9 +79,9 @@ struct
         make a new env with just the desired vs. *)
     let vs' =
       vs
-      |> List.enum
-      |> Enum.filter (fun v -> Environment.mem_var env v)
-      |> Array.of_enum
+      |> List.to_seq
+      |> Seq.filter (fun v -> Environment.mem_var env v)
+      |> Array.of_seq
     in
     Environment.make vs' [||]
 
@@ -90,9 +90,9 @@ struct
        make a new env with just the desired vars. *)
     let vs' =
       ivars_only env
-      |> List.enum
-      |> Enum.filter f
-      |> Array.of_enum
+      |> List.to_seq
+      |> Seq.filter f
+      |> Array.of_seq
     in
     Environment.make vs' [||]
 end

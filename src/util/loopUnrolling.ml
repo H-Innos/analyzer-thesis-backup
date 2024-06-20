@@ -241,7 +241,6 @@ let rec loopIterations start diff comp =
   | BinOp (Ne, _, (Const (CInt (cint,_,_) )), _) -> loopIterations' cint true
   | _ -> failwith "unexpected comparison in loopIterations"
 
-let ( >>= ) = Option.bind
 let fixedLoopSize loopStatement func =
   let findBreakComparison = try (*find a single break in the else branch of a toplevel if*)
       let compOption = ref None in
@@ -267,13 +266,14 @@ let fixedLoopSize loopStatement func =
        with | WrongOrMultiple ->  None
   in
 
-  findBreakComparison >>= fun comparison ->
-  getLoopVar comparison >>= fun var ->
+  let open GobOption.Syntax in
+  let* comparison = findBreakComparison in
+  let* var = getLoopVar comparison in
   if getsPointedAt var then
     None
   else
-    constBefore var loopStatement func >>= fun start ->
-    assignmentDifference loopStatement var >>= fun diff ->
+    let* start = constBefore var loopStatement func in
+    let* diff = assignmentDifference loopStatement var in
     Logs.debug "comparison: ";
     Pretty.fprint stderr (dn_exp () comparison) ~width:max_int;
     Logs.debug "";

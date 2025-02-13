@@ -86,7 +86,6 @@ struct
   let bot () = `Bot
   let top_of ik = `Excluded (S.empty (), size ik)
   let bot_of ik = bot ()
-a
   let show x =
     let short_size x = "("^R.show x^")" in
     match x with
